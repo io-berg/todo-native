@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Appbar, Divider, Menu } from "react-native-paper";
-import { NativeProps } from "react-native-safe-area-context/lib/typescript/specs/NativeSafeAreaView";
 
 interface Props {
   navigation: any;
@@ -27,6 +26,7 @@ const TodoNavBar = ({ navigation, back }: Props) => {
           <Divider
             style={{
               backgroundColor: "black",
+              height: 1,
             }}
           />
           <Menu.Item onPress={() => {}} title="Item 3" />
