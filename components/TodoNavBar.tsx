@@ -21,7 +21,12 @@ const TodoNavBar = ({ navigation, back }: Props) => {
           onDismiss={closeMenu}
           anchor={<Appbar.Action icon="dots-vertical" onPress={openMenu} />}
         >
-          <Menu.Item onPress={() => {}} title="Item 1" />
+          <Menu.Item
+            onPress={() => {
+              navigation.navigate("Profile");
+            }}
+            title="Profile"
+          />
           <Menu.Item onPress={() => {}} title="Item 2" />
           <Divider
             style={{

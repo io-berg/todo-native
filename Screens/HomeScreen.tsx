@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as Location from "expo-location";
+import { LocationAccuracy } from "expo-location";
+import { default as React, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import MapView, { LatLng } from "react-native-maps";
 import { Button, TextInput, TouchableRipple } from "react-native-paper";
-import { locationObject } from "../App";
 import { useTodo } from "../contexts/TodoContext";
 
 type Props = {
   navigation: any;
-  location: locationObject | undefined;
 };
 
-const HomeScreen = ({ navigation, location }: Props) => {
+const HomeScreen = ({ navigation }: Props) => {
   const { toggleTodo, addTodo, todos, clearTodos } = useTodo();
   const [title, setTitle] = useState<string>("");
   const [coordinates, setCoordinates] = useState<LatLng>();
@@ -20,6 +21,28 @@ const HomeScreen = ({ navigation, location }: Props) => {
     setCoordinates(location);
     setShowMap(false);
   };
+
+  const [location, setLocation] = useState<Location.LocationObject>();
+  const [errorMsg, setErrorMsg] = useState<string>();
+
+  useEffect(() => {
+    (async () => {
+      await Location.requestForegroundPermissionsAsync();
+      let { status } = await Location.requestBackgroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      await Location.enableNetworkProviderAsync();
+
+      let location = await Location.getCurrentPositionAsync({
+        accuracy: LocationAccuracy.Highest,
+      });
+
+      setLocation(location);
+    })();
+  }, []);
 
   if (showMap) {
     return (
@@ -48,6 +71,25 @@ const HomeScreen = ({ navigation, location }: Props) => {
       <Text>
         location: {location?.coords.latitude}, {location?.coords.longitude}
       </Text>
+      <Button
+        onPress={() => {
+          Location.requestForegroundPermissionsAsync();
+          Location.requestBackgroundPermissionsAsync();
+          Location.enableNetworkProviderAsync();
+          Location.getCurrentPositionAsync({
+            accuracy: LocationAccuracy.BestForNavigation,
+            timeInterval: 1000,
+            distanceInterval: 1,
+          }).then((location) => {
+            setLocation(location);
+            console.log(location);
+          });
+        }}
+      >
+        {" "}
+        Location Update{" "}
+      </Button>
+      <MaterialCommunityIcons name="star-face" size={24} color="black" />
       <View
         style={{
           marginTop: 50,
