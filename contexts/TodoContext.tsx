@@ -1,6 +1,8 @@
-import { createContext, FC, useContext, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createContext, FC, useContext, useEffect, useState } from "react";
 import { LatLng } from "react-native-maps";
 import { Todo } from "../types";
+import data from "../utils/mockdata";
 
 interface TodoContextType {
   todos: Todo[];
@@ -25,7 +27,15 @@ interface Props {
 }
 
 export const TodoProvider: FC<Props> = ({ children }) => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    AsyncStorage.getItem("todos").then((data) => {
+      if (data) {
+        return JSON.parse(data);
+      }
+    });
+
+    return data;
+  });
 
   const addTodo = (title: string, coordinates?: LatLng) => {
     const newTodo: Todo = {
@@ -67,6 +77,10 @@ export const TodoProvider: FC<Props> = ({ children }) => {
       })
     );
   };
+
+  useEffect(() => {
+    AsyncStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   return (
     <TodoContext.Provider
