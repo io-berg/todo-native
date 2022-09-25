@@ -1,12 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, FC, useContext, useEffect, useState } from "react";
 import { LatLng } from "react-native-maps";
-import { Todo } from "../types";
 import data from "../utils/mockdata";
+import { Todo } from "../utils/types";
 
 interface TodoContextType {
   todos: Todo[];
-  addTodo: (title: string, coordinates?: LatLng) => void;
+  addTodo: (title: string, dueDate: Date, coordinates?: LatLng) => void;
   removeTodo: (id: string) => void;
   updateTodo: (id: string, title: string) => void;
   toggleTodo: (id: string) => void;
@@ -15,7 +15,7 @@ interface TodoContextType {
 
 const TodoContext = createContext<TodoContextType>({
   todos: [],
-  addTodo: (title: string, coordinates?: LatLng) => {},
+  addTodo: (title: string, dueDate: Date, coordinates?: LatLng) => {},
   removeTodo: (id: string) => {},
   updateTodo: (id: string, title: string) => {},
   toggleTodo: (id: string) => {},
@@ -37,12 +37,13 @@ export const TodoProvider: FC<Props> = ({ children }) => {
     return data;
   });
 
-  const addTodo = (title: string, coordinates?: LatLng) => {
+  const addTodo = (title: string, dueDate: Date, coordinates?: LatLng) => {
     const newTodo: Todo = {
       id: new Date().getTime().toString(),
       title,
       coordinates,
-      completed: false,
+      status: "pending",
+      dueDate,
     };
 
     setTodos([...todos, newTodo]);
@@ -71,7 +72,7 @@ export const TodoProvider: FC<Props> = ({ children }) => {
     setTodos(
       todos.map((todo) => {
         if (todo.id === id) {
-          todo.completed = !todo.completed;
+          todo.status = todo.status === "completed" ? "pending" : "completed";
         }
         return todo;
       })
