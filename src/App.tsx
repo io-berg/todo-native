@@ -1,10 +1,8 @@
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { LatLng } from "react-native-maps";
-import TodoNavBar from "./components/TodoNavBar";
-import DetailsScreen from "./Screens/DetailsScreen";
-import HomeScreen from "./Screens/HomeScreen";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import Navigation from "./navigators/Index";
 
 export type RootStackParams = {
   Home: {};
@@ -20,15 +18,8 @@ const Stack = createNativeStackNavigator<RootStackParams>();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          header: (props) => <TodoNavBar {...props} />,
-        }}
-      >
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Details" component={DetailsScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <Navigation />
+    </SafeAreaProvider>
   );
 }
